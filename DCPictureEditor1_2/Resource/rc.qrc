@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/">
+        <file>CursorIcon/Circle.png</file>
+        <file>ToolIcon/MoveAll.png</file>
+        <file>ToolIcon/MoveAll1.png</file>
+        <file>ToolIcon/MoveLayer.png</file>
+        <file>ToolIcon/MoveLayer1.png</file>
+        <file>ToolIcon/Brush.png</file>
+        <file>ToolIcon/Brush1.png</file>
+        <file>ToolIcon/Eraser.png</file>
+        <file>ToolIcon/Eraser1.png</file>
+        <file>CursorIcon/Brush.png</file>
+        <file>AppIcon.png</file>
+        <file>ActionIcon/ActionExit.png</file>
+        <file>ActionIcon/ActionExport.png</file>
+        <file>ActionIcon/ActionNew.png</file>
+        <file>ActionIcon/ActionOpen.png</file>
+        <file>ActionIcon/ActionSave.png</file>
+        <file>ActionIcon/ActionExpand.png</file>
+        <file>ActionIcon/ActionShrink.png</file>
+        <file>ToolIcon/TextEditor.png</file>
+        <file>ToolIcon/TextEditor1.png</file>
+        <file>CursorIcon/TextEditor.png</file>
+        <file>Languages/Chinese/qt_zh_CN.qm</file>
+        <file>ToolIcon/Seal.png</file>
+        <file>ToolIcon/Seal1.png</file>
+        <file>ActionIcon/Action100Per.png</file>
+        <file>ActionIcon/ActionFitOnScreen.png</file>
+        <file>ActionIcon/ActionMoveTo0.png</file>
+        <file>ActionIcon/FreeTransform.png</file>
+    </qresource>
+</RCC>
