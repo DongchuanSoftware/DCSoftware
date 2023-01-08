@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>516</width>
+    <height>396</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>东川图片编辑器</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="Resource/rc.qrc">
+    <normaloff>:/AppIcon.png</normaloff>:/AppIcon.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">*
+{
+    background-color:rgb(53,53,53);
+    selection-background-color:rgb(0,170,255);
+    color:rgb(255,255,255);
+    font: 12pt &quot;HarmonyOS Sans SC&quot;;
+    font: 12pt &quot;楷体&quot;;
+}
+
+QTabBar::tab
+{
+    background-color:rgb(60,60,60);
+    color:rgb(255,255,255);
+}
+
+QMenuBar::item:selected
+{
+    background-color:rgb(0,170,255);
+}</string>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>516</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionExport"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>视图</string>
+    </property>
+    <addaction name="actionShrink"/>
+    <addaction name="actionExpand"/>
+    <addaction name="actionFitOnScreen"/>
+    <addaction name="action100Per"/>
+    <addaction name="actionMoveTo0"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>工具</string>
+    </property>
+    <addaction name="actionToolMoveAll"/>
+    <addaction name="actionToolMoveLayer"/>
+    <addaction name="separator"/>
+    <addaction name="actionToolBrush"/>
+    <addaction name="actionToolDrawLine"/>
+    <addaction name="actionDrawCircle"/>
+    <addaction name="actionToolEraser"/>
+    <addaction name="separator"/>
+    <addaction name="actionToolTextEditor"/>
+    <addaction name="separator"/>
+    <addaction name="actionToolSeal"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>编辑</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+    <addaction name="separator"/>
+    <addaction name="actionHorizontalFold"/>
+    <addaction name="actionVerticalFold"/>
+    <addaction name="separator"/>
+    <addaction name="actionClockwiseRotation90Dgr"/>
+    <addaction name="actionCounterClockwiseRotation90Dgr"/>
+    <addaction name="actionClockwiseRotation180Dgr"/>
+    <addaction name="actionClockwiseRotationAnyDgr"/>
+    <addaction name="separator"/>
+    <addaction name="actionFreeTransform"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
+   <addaction name="menuTools"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>工具栏</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionToolMoveAll"/>
+   <addaction name="actionToolMoveLayer"/>
+   <addaction name="actionToolBrush"/>
+   <addaction name="actionToolDrawLine"/>
+   <addaction name="actionDrawCircle"/>
+   <addaction name="actionToolEraser"/>
+   <addaction name="actionToolTextEditor"/>
+   <addaction name="actionToolSeal"/>
+  </widget>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionNew.png</normaloff>:/ActionIcon/ActionNew.png</iconset>
+   </property>
+   <property name="text">
+    <string>新建</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionOpen.png</normaloff>:/ActionIcon/ActionOpen.png</iconset>
+   </property>
+   <property name="text">
+    <string>打开</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionSave.png</normaloff>:/ActionIcon/ActionSave.png</iconset>
+   </property>
+   <property name="text">
+    <string>保存</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionExport.png</normaloff>:/ActionIcon/ActionExport.png</iconset>
+   </property>
+   <property name="text">
+    <string>导出</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionExit.png</normaloff>:/ActionIcon/ActionExit.png</iconset>
+   </property>
+   <property name="text">
+    <string>退出</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionShrink">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionShrink.png</normaloff>:/ActionIcon/ActionShrink.png</iconset>
+   </property>
+   <property name="text">
+    <string>缩小</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionExpand">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionExpand.png</normaloff>:/ActionIcon/ActionExpand.png</iconset>
+   </property>
+   <property name="text">
+    <string>放大</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
+   </property>
+  </action>
+  <action name="actionToolMoveAll">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ToolIcon/MoveAll.png</normaloff>
+     <normalon>:/ToolIcon/MoveAll1.png</normalon>:/ToolIcon/MoveAll.png</iconset>
+   </property>
+   <property name="text">
+    <string>移动全部工具</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#000000;&quot;&gt;移动全部工具&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionToolMoveLayer">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ToolIcon/MoveLayer.png</normaloff>
+     <normalon>:/ToolIcon/MoveLayer1.png</normalon>:/ToolIcon/MoveLayer.png</iconset>
+   </property>
+   <property name="text">
+    <string>移动图层工具</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#000000;&quot;&gt;移动图层工具&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>M</string>
+   </property>
+  </action>
+  <action name="actionToolBrush">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ToolIcon/Brush.png</normaloff>
+     <normalon>:/ToolIcon/Brush1.png</normalon>:/ToolIcon/Brush.png</iconset>
+   </property>
+   <property name="text">
+    <string>画笔工具</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#000000;&quot;&gt;画笔工具&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>B</string>
+   </property>
+  </action>
+  <action name="actionToolEraser">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ToolIcon/Eraser.png</normaloff>
+     <normalon>:/ToolIcon/Eraser1.png</normalon>:/ToolIcon/Eraser.png</iconset>
+   </property>
+   <property name="text">
+    <string>橡皮工具</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#000000;&quot;&gt;橡皮工具&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>E</string>
+   </property>
+  </action>
+  <action name="actionToolTextEditor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ToolIcon/TextEditor.png</normaloff>
+     <normalon>:/ToolIcon/TextEditor1.png</normalon>:/ToolIcon/TextEditor.png</iconset>
+   </property>
+   <property name="text">
+    <string>文本编辑工具</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#000000;&quot;&gt;文本编辑工具&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>T</string>
+   </property>
+  </action>
+  <action name="actionToolSeal">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ToolIcon/Seal.png</normaloff>
+     <normalon>:/ToolIcon/Seal1.png</normalon>:/ToolIcon/Seal.png</iconset>
+   </property>
+   <property name="text">
+    <string>印章工具</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot;color:#000000;&quot;&gt;印章工具&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>S</string>
+   </property>
+  </action>
+  <action name="actionFitOnScreen">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionFitOnScreen.png</normaloff>:/ActionIcon/ActionFitOnScreen.png</iconset>
+   </property>
+   <property name="text">
+    <string>按屏幕大小缩放</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="action100Per">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/Action100Per.png</normaloff>:/ActionIcon/Action100Per.png</iconset>
+   </property>
+   <property name="text">
+    <string>100%</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="actionMoveTo0">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionMoveTo0.png</normaloff>:/ActionIcon/ActionMoveTo0.png</iconset>
+   </property>
+   <property name="text">
+    <string>回到原位</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+O</string>
+   </property>
+  </action>
+  <action name="actionFreeTransform">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionFreeTransform.png</normaloff>:/ActionIcon/ActionFreeTransform.png</iconset>
+   </property>
+   <property name="text">
+    <string>自由变换</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionUndo.png</normaloff>:/ActionIcon/ActionUndo.png</iconset>
+   </property>
+   <property name="text">
+    <string>撤销</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ActionRedo.png</normaloff>:/ActionIcon/ActionRedo.png</iconset>
+   </property>
+   <property name="text">
+    <string>恢复</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="actionHorizontalFold">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/HorizontalFold.png</normaloff>:/ActionIcon/HorizontalFold.png</iconset>
+   </property>
+   <property name="text">
+    <string>水平翻折</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+H</string>
+   </property>
+  </action>
+  <action name="actionVerticalFold">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/VerticalFold.png</normaloff>:/ActionIcon/VerticalFold.png</iconset>
+   </property>
+   <property name="text">
+    <string>垂直翻折</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+V</string>
+   </property>
+  </action>
+  <action name="actionClockwiseRotation90Dgr">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ClockwiseRotation90Dgr.png</normaloff>:/ActionIcon/ClockwiseRotation90Dgr.png</iconset>
+   </property>
+   <property name="text">
+    <string>顺时针旋转90°</string>
+   </property>
+  </action>
+  <action name="actionCounterClockwiseRotation90Dgr">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/CounterClockwiseRotation90Dgr.png</normaloff>:/ActionIcon/CounterClockwiseRotation90Dgr.png</iconset>
+   </property>
+   <property name="text">
+    <string>逆时针旋转90°</string>
+   </property>
+  </action>
+  <action name="actionClockwiseRotation180Dgr">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ClockwiseRotation180Dgr.png</normaloff>:/ActionIcon/ClockwiseRotation180Dgr.png</iconset>
+   </property>
+   <property name="text">
+    <string>顺时针旋转180°</string>
+   </property>
+  </action>
+  <action name="actionClockwiseRotationAnyDgr">
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ActionIcon/ClockwiseRotationAnyDgr.png</normaloff>:/ActionIcon/ClockwiseRotationAnyDgr.png</iconset>
+   </property>
+   <property name="text">
+    <string>任意旋转</string>
+   </property>
+  </action>
+  <action name="actionToolDrawLine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ToolIcon/DrawLine.png</normaloff>
+     <normalon>:/ToolIcon/DrawLine1.png</normalon>:/ToolIcon/DrawLine.png</iconset>
+   </property>
+   <property name="text">
+    <string>画直线工具</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#000000;&quot;&gt;画直线工具&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>L</string>
+   </property>
+  </action>
+  <action name="actionDrawCircle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Resource/rc.qrc">
+     <normaloff>:/ToolIcon/DrawCircle.png</normaloff>
+     <normalon>:/ToolIcon/DrawCircle1.png</normalon>:/ToolIcon/DrawCircle.png</iconset>
+   </property>
+   <property name="text">
+    <string>圆规工具</string>
+   </property>
+   <property name="shortcut">
+    <string>C</string>
+   </property>
+  </action>
+  <zorder>dockWidget</zorder>
+  <zorder>dockWidget_2</zorder>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="Resource/rc.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,46 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ToolIcon/MoveAll.png</file>
+        <file>ToolIcon/MoveAll1.png</file>
+        <file>ToolIcon/MoveLayer.png</file>
+        <file>ToolIcon/MoveLayer1.png</file>
+        <file>ToolIcon/Brush.png</file>
+        <file>ToolIcon/Brush1.png</file>
+        <file>ToolIcon/Eraser.png</file>
+        <file>ToolIcon/Eraser1.png</file>
+        <file>CursorIcon/Brush.png</file>
+        <file>AppIcon.png</file>
+        <file>ActionIcon/ActionExit.png</file>
+        <file>ActionIcon/ActionExport.png</file>
+        <file>ActionIcon/ActionNew.png</file>
+        <file>ActionIcon/ActionOpen.png</file>
+        <file>ActionIcon/ActionSave.png</file>
+        <file>ActionIcon/ActionExpand.png</file>
+        <file>ActionIcon/ActionShrink.png</file>
+        <file>ToolIcon/TextEditor.png</file>
+        <file>ToolIcon/TextEditor1.png</file>
+        <file>CursorIcon/TextEditor.png</file>
+        <file>Languages/Chinese/qt_zh_CN.qm</file>
+        <file>ToolIcon/Seal.png</file>
+        <file>ToolIcon/Seal1.png</file>
+        <file>ActionIcon/Action100Per.png</file>
+        <file>ActionIcon/ActionFitOnScreen.png</file>
+        <file>ActionIcon/ActionMoveTo0.png</file>
+        <file>CursorIcon/Circle.png</file>
+        <file>ActionIcon/ActionFreeTransform.png</file>
+        <file>ActionIcon/ActionRedo.png</file>
+        <file>ActionIcon/ActionUndo.png</file>
+        <file>OtherIcon/Visit0.png</file>
+        <file>OtherIcon/Visit1.png</file>
+        <file>ActionIcon/HorizontalFold.png</file>
+        <file>ActionIcon/VerticalFold.png</file>
+        <file>ActionIcon/ClockwiseRotation90Dgr.png</file>
+        <file>ActionIcon/ClockwiseRotation180Dgr.png</file>
+        <file>ActionIcon/ClockwiseRotationAnyDgr.png</file>
+        <file>ActionIcon/CounterClockwiseRotation90Dgr.png</file>
+        <file>ToolIcon/DrawLine.png</file>
+        <file>ToolIcon/DrawLine1.png</file>
+        <file>ToolIcon/DrawCircle.png</file>
+        <file>ToolIcon/DrawCircle1.png</file>
+    </qresource>
+</RCC>
