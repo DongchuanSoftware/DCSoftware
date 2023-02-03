@@ -93,7 +93,7 @@ void LayerAttrManager::on_editName_textChanged(const QString &str)
 {
     if(lymanager->selectedItems().size()==0)return;
     int n=lymanager->v_layers.size()-lymanager->selectedItems().first()->row()-1;
-    Layer& ly=*lymanager->v_layers[lymanager->v_layers.size()-lymanager->selectedItems().first()->row()-1];
+    Layer& ly=*lymanager->v_layers[n];
     ly.name=str;
     lymanager->upDateUI();
 }
@@ -102,7 +102,7 @@ void LayerAttrManager::on_spinWidth_valueChanged(int width)
 {
     if(lymanager->selectedItems().size()==0)return;
     int n=lymanager->v_layers.size()-lymanager->selectedItems().first()->row()-1;
-    Layer& ly=*lymanager->v_layers[lymanager->v_layers.size()-lymanager->selectedItems().first()->row()-1];
+    Layer& ly=*lymanager->v_layers[n];
     if(ui->checkClockK->isChecked())
     {
         ly.height=ly.height*width/ly.width;
@@ -117,7 +117,7 @@ void LayerAttrManager::on_spinHeight_valueChanged(int height)
 {
     if(lymanager->selectedItems().size()==0)return;
     int n=lymanager->v_layers.size()-lymanager->selectedItems().first()->row()-1;
-    Layer& ly=*lymanager->v_layers[lymanager->v_layers.size()-lymanager->selectedItems().first()->row()-1];
+    Layer& ly=*lymanager->v_layers[n];
     if(ui->checkClockK->isChecked())
     {
         ly.width=ly.width*height/ly.height;
@@ -132,7 +132,7 @@ void LayerAttrManager::on_spinX_valueChanged(int x)
 {
     if(lymanager->selectedItems().size()==0)return;
     int n=lymanager->v_layers.size()-lymanager->selectedItems().first()->row()-1;
-    Layer& ly=*lymanager->v_layers[lymanager->v_layers.size()-lymanager->selectedItems().first()->row()-1];
+    Layer& ly=*lymanager->v_layers[n];
     ly.x=x;
     lymanager->upDateUI();
 }
@@ -141,7 +141,7 @@ void LayerAttrManager::on_spinY_valueChanged(int y)
 {
     if(lymanager->selectedItems().size()==0)return;
     int n=lymanager->v_layers.size()-lymanager->selectedItems().first()->row()-1;
-    Layer& ly=*lymanager->v_layers[lymanager->v_layers.size()-lymanager->selectedItems().first()->row()-1];
+    Layer& ly=*lymanager->v_layers[n];
     ly.y=y;
     lymanager->upDateUI();
 }

@@ -32,7 +32,7 @@ LayerManager::LayerManager(QWidget *parent) : QTableWidget(parent)
         PictureLayer* ply=new PictureLayer;
         ply->width=v_layers[0]->width;
         ply->height=v_layers[0]->height;
-        QPixmap pix(ply->width,ply->height);
+        QImage pix(ply->width,ply->height,QImage::Format_ARGB32);
         pix.fill(Qt::transparent);
         ply->object=pix;
         this->v_layers.insert(v_layers.begin()+(v_layers.size()-x),ply);
@@ -46,7 +46,7 @@ LayerManager::LayerManager(QWidget *parent) : QTableWidget(parent)
         PictureLayer* ply=new PictureLayer;
         ply->width=v_layers[0]->width;
         ply->height=v_layers[0]->height;
-        QPixmap pix(ply->width,ply->height);
+        QImage pix(ply->width,ply->height,QImage::Format_ARGB32);
         pix.fill(Qt::transparent);
         ply->object=pix;
         this->v_layers.insert(v_layers.begin()+(v_layers.size()-x-1),ply);
@@ -112,7 +112,7 @@ LayerManager::LayerManager(QWidget *parent) : QTableWidget(parent)
     QAction* actionMergeDown=new QAction("向下合并图层",this);
     connect(actionMergeDown,&QAction::triggered,this,[=](){
         int x=this->row(this->selectedItems().first());
-        QPixmap pix(this->width,this->height);
+        QImage pix(this->width,this->height,QImage::Format_ARGB32);
         pix.fill(Qt::transparent);
         v_layers[v_layers.size()-x-2]->Draw(&pix);
         v_layers[v_layers.size()-x-1]->Draw(&pix);
@@ -146,7 +146,7 @@ LayerManager::LayerManager(QWidget *parent) : QTableWidget(parent)
         PictureLayer* ply=new PictureLayer;
         ply->width=v_layers[0]->width;
         ply->height=v_layers[0]->height;
-        QPixmap pix(ply->width,ply->height);
+        QImage pix(ply->width,ply->height,QImage::Format_ARGB32);
         pix.fill(Qt::transparent);
         v_layers[v_layers.size()-this->row(this->selectedItems().first())-1]->Draw(&pix);
         ply->object=pix;

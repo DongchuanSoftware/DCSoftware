@@ -14,7 +14,7 @@ class TextLayer:public Layer
 public:
     TextLayer();
     ~TextLayer();
-    void Draw(QPixmap* qpd);
+    void Draw(QPaintDevice* qpd);
     
     QTextDocument object;
 };

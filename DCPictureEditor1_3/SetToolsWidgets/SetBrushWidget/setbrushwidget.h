@@ -27,6 +27,7 @@ public:
 
 signals:
     void widthChanged();
+    void setWidth(int w);
     void setRadius(int r);
     
 private slots:

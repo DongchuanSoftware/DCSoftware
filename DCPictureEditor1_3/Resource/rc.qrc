@@ -8,7 +8,6 @@
         <file>ToolIcon/Brush1.png</file>
         <file>ToolIcon/Eraser.png</file>
         <file>ToolIcon/Eraser1.png</file>
-        <file>CursorIcon/Brush.png</file>
         <file>AppIcon.png</file>
         <file>ActionIcon/ActionExit.png</file>
         <file>ActionIcon/ActionExport.png</file>
@@ -42,5 +41,6 @@
         <file>ToolIcon/DrawLine1.png</file>
         <file>ToolIcon/DrawCircle.png</file>
         <file>ToolIcon/DrawCircle1.png</file>
+        <file>ActionIcon/ActionPrint.png</file>
     </qresource>
 </RCC>

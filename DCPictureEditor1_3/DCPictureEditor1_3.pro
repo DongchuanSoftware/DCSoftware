@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui openglwidgets
+QT       += core gui openglwidgets printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -39,7 +39,6 @@ SOURCES += \
         Layer/picturelayer.cpp \
         Layer/textlayer.cpp \
         SetToolsWidgets/SetBrushWidget/setbrushwidget.cpp \
-        SetToolsWidgets/SetSealWidget/setsealwidget.cpp \
         SetToolsWidgets/SetTextEditorWidget/fontsetting.cpp \
         SetToolsWidgets/SetTextEditorWidget/textlayereditor.cpp \
         SetToolsWidgets/SetTextEditorWidget/wkwidgetfortle.cpp \
@@ -63,7 +62,6 @@ HEADERS += \
         Layer/picturelayer.h \
         Layer/textlayer.h \
         SetToolsWidgets/SetBrushWidget/setbrushwidget.h \
-        SetToolsWidgets/SetSealWidget/setsealwidget.h \
         SetToolsWidgets/SetTextEditorWidget/fontsetting.h \
         SetToolsWidgets/SetTextEditorWidget/textlayereditor.h \
         SetToolsWidgets/SetTextEditorWidget/wkwidgetfortle.h \
@@ -76,10 +74,12 @@ FORMS += \
         Color/colormanager.ui \
         Layer/layerattrmanager.ui \
         SetToolsWidgets/SetBrushWidget/setbrushwidget.ui \
-        SetToolsWidgets/SetSealWidget/setsealwidget.ui \
         SetToolsWidgets/SetTextEditorWidget/fontsetting.ui \
         SetToolsWidgets/SetTextEditorWidget/textlayereditor.ui \
         mainwindow.ui
+
+INCLUDEPATH += D:\Download\Lib\opencv\opencv-build\install\include
+LIBS += D:\Download\Lib\opencv\opencv-build\lib\libopencv_*.a
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -90,3 +90,6 @@ RESOURCES += \
     Resource/rc.qrc
 
 RC_ICONS = Resource/AppIcon.ico
+
+
+QMAKE_CXXFLAGS_RELEASE += -O3

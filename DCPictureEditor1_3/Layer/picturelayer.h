@@ -5,15 +5,16 @@
 #include<QPaintDevice>
 #include<QPainter>
 #include<QPixmap>
+#include<QImage>
 
 class PictureLayer:public Layer
 {
 public:
     PictureLayer();
     ~PictureLayer();
-    void Draw(QPixmap* qpd);
+    void Draw(QPaintDevice* qpd);
     
-    QPixmap object;
+    QImage object;
 };
 
 #endif // PICTURELAYER_H

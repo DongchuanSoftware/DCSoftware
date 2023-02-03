@@ -37,6 +37,7 @@ SetBrushWidget::SetBrushWidget(QWidget *parent) :
     
     ui->spinBoxRadius->setValue(100);
     
+    connect(this,&SetBrushWidget::setWidth,ui->spinBoxWidth,&QSpinBox::setValue);
     connect(this,&SetBrushWidget::setRadius,ui->spinBoxRadius,&QSpinBox::setValue);
 }
 

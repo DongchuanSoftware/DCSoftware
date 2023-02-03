@@ -104,14 +104,78 @@ double pointToDegree(QPoint o,QPoint a)
     }
 }
 
-void drawMyArc(QPainter *p, QPoint o, int r, QPoint s, QPoint e)
+MyPainter::MyPainter()
+{
+    imgDevice=nullptr;
+    texture=nullptr;
+    ap=QPoint(-1,-1);
+}
+
+void MyPainter::setSealTool(QImage *_imgDevice, QPoint a, QImage *_texture, QPoint aPrime)
+{
+    if(imgDevice==_imgDevice&&texture==_texture&&ap==aPrime)return;
+    imgDevice=_imgDevice;
+    texture=_texture;
+    ap=aPrime;
+    xOffset=aPrime.x()-a.x();
+    yOffset=aPrime.y()-a.y();
+}
+
+void MyPainter::drawMyArc(QPoint o, int r, QPoint s, QPoint e)
 {
     if(o==s||o==e)return;
     double sd=pointToDegree(o,s);
     double ed=pointToDegree(o,e);
     double x=ed-sd+360;
     x=x>360?(x-360):x;
-    p->drawArc(o.x()-r,o.y()-r,r*2,r*2,
+    this->drawArc(o.x()-r,o.y()-r,r*2,r*2,
                sd*16,
                (x<=180?x:(x-360))*16);
+}
+
+void MyPainter::drawMyLine(QPoint a,QPoint b)
+{
+    if(!((long long)imgDevice&&(long long)texture))
+    {
+        return;
+    }
+    
+    bool flag=0;
+    if(std::abs(b.y()-a.y())>std::abs(b.x()-a.x()))
+    {
+        a=QPoint(a.y(),a.x());
+        b=QPoint(b.y(),b.x());
+        flag=1;
+    }
+    if(a.x()>b.x())
+    {
+        std::swap(a,b);
+    }
+    
+    double k=(b.y()-a.y())/(double)(b.x()-a.x());
+    double l=b.y()-b.x()*k;
+    for(int i=l-pen().widthF()/2;i<=l+pen().widthF()/2;i++)
+    {
+        for(int j=a.x();j<=b.x();j++)
+        {
+            int x,y;
+            if(!flag)
+            {
+                x=j;
+                y=k*j+i;
+            }
+            else
+            {
+                x=k*j+i;
+                y=j;
+            }
+            if(x<0||x>=imgDevice->width()||y<0||y>=imgDevice->height()||
+                    x+xOffset<0||x+xOffset>=texture->width()||y+yOffset<0||y+yOffset>=texture->height())
+            {
+                continue;
+            }
+            QColor cl=texture->pixelColor(x+xOffset,y+yOffset);
+            imgDevice->setPixelColor(x,y,cl);
+        }
+    }
 }

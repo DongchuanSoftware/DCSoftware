@@ -10,7 +10,7 @@ TextLayer::~TextLayer()
     
 }
 
-void TextLayer::Draw(QPixmap *qpd)
+void TextLayer::Draw(QPaintDevice *qpd)
 {
     QPainter painter(qpd);
     painter.translate(x,y);

@@ -11,9 +11,9 @@ BackgroundLayer::~BackgroundLayer()
     
 }
 
-void BackgroundLayer::Draw(QPixmap *qpd)
+void BackgroundLayer::Draw(QPaintDevice *qpd)
 {
     QPainter painter(qpd);
-    painter.drawPixmap(x,y,width,height,object);
+    painter.drawImage(QRect(x,y,width,height),object);
     painter.end();
 }

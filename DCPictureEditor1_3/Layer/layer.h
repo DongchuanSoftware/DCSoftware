@@ -23,7 +23,7 @@ public:
     int height;
     bool vis;
     QString name;
-    virtual void Draw(QPixmap* qpd)=0;
+    virtual void Draw(QPaintDevice* qpd)=0;
     LayerType type;
 };
 

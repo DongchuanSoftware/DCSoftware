@@ -23,7 +23,7 @@ public:
     
     QString filename;
     QColor color;
-    QPixmap* pix=nullptr;
+    QImage* img=nullptr;
     
     QDialog* p_dlg=nullptr;
     

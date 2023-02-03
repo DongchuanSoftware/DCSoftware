@@ -5,19 +5,17 @@ WorkSpace::WorkSpace(QWidget *parent,
                      LayerManager *_lymanager,
                      LayerAttrManager *_lyatmanager,
                      ColorManager *_clmanager,
-                     SetBrushWidget *_setbrush,
-                     SetSealWidget *_setseal) : QOpenGLWidget(parent)
+                     SetBrushWidget *_setbrush) : QOpenGLWidget(parent)
 {
-    this->setAcceptDrops(1);
-    setCursor(Qt::OpenHandCursor);
-    
     lymanager=_lymanager;
     lyatmanager=_lyatmanager;
     clmanager=_clmanager;
     setbrush=_setbrush;
-    setseal=_setseal;
     
     this->setMinimumSize(300,300);
+    
+    this->setAcceptDrops(1);
+    setCursor(Qt::OpenHandCursor);
 }
 
 void WorkSpace::initializeGL()
@@ -35,13 +33,14 @@ void WorkSpace::paintGL()
     {
         return;
     }
-    QPixmap pix(lymanager->width,lymanager->height);
-    pix.fill(Qt::transparent);
+    
+    QImage img(lymanager->width,lymanager->height,QImage::Format_ARGB32);
+    img.fill(Qt::transparent);
     for(int i=0;i<(int)lymanager->v_layers.size();i++)
     {
         if(lymanager->v_layers[i]->vis)
         {
-            lymanager->v_layers[i]->Draw(&pix);
+            lymanager->v_layers[i]->Draw(&img);
         }
         
     }
@@ -54,7 +53,7 @@ void WorkSpace::paintGL()
     }
     pt.drawImage(QRect(lymanager->x,lymanager->y,
                         lymanager->width*lymanager->k,lymanager->height*lymanager->k),
-                        pix.toImage());
+                        img);
     pt.end();
 }
 
@@ -77,9 +76,8 @@ void WorkSpace::dragMoveEvent(QDragMoveEvent* event)
 void WorkSpace::dropEvent(QDropEvent *de)
 {
     const QMimeData* qm=de->mimeData();
-    QPixmap img;
-    img.fill(Qt::transparent);
-    QString filename=qm->urls().front().toLocalFile();
+    QImage img;
+    QString filename=qm->urls().at(0).toLocalFile();
     bool f=img.load(filename);
     if(f)
     {
@@ -107,6 +105,17 @@ void WorkSpace::dropEvent(QDropEvent *de)
     lymanager->upDateUI();
 }
 
+void WorkSpace::wheelEvent(QWheelEvent *qwe)
+{
+    if(lymanager->v_layers.empty()||(lymanager->selectedItems().size()==0))
+    {
+        return;
+    }
+    lymanager->x+=qwe->angleDelta().x();
+    lymanager->y+=qwe->angleDelta().y();
+    this->update();
+}
+
 void WorkSpace::mousePressEvent(QMouseEvent *qme)
 {
     if(lymanager->v_layers.empty()||(lymanager->selectedItems().size()==0))
@@ -121,7 +130,10 @@ void WorkSpace::mousePressEvent(QMouseEvent *qme)
     layerType=lymanager->v_layers[layerIndex]->type;
     if(layerType==LT_PICTURE)
     {
-        painter.begin((&((PictureLayer*)(lymanager->v_layers[layerIndex]))->object));
+        if(!painter.begin(&((PictureLayer*)(lymanager->v_layers[layerIndex]))->object))
+        {
+            QMessageBox::warning(this,"错误","WorkSpace::mousePressEvent::painter异常");
+        }
         painter.setRenderHint(QPainter::Antialiasing);
     }
     
@@ -156,7 +168,7 @@ void WorkSpace::mousePressEvent(QMouseEvent *qme)
         pen1.setWidth(setbrush->width_M);
         painter.setPen(pen1);
         painter.setCompositionMode(QPainter::CompositionMode_Source);
-        pix=((PictureLayer*)(lymanager->v_layers[layerIndex]))->object;
+        img=((PictureLayer*)(lymanager->v_layers[layerIndex]))->object;
     }break;
     case DrawCircle:{
         if(layerType!=LT_PICTURE)return;
@@ -168,7 +180,7 @@ void WorkSpace::mousePressEvent(QMouseEvent *qme)
         painter.setCompositionMode(QPainter::CompositionMode_Source);
         if(setbrush->isCircle_M)
         {
-            pix=((PictureLayer*)(lymanager->v_layers[layerIndex]))->object;
+            img=((PictureLayer*)(lymanager->v_layers[layerIndex]))->object;
         }
         else
         {
@@ -180,7 +192,8 @@ void WorkSpace::mousePressEvent(QMouseEvent *qme)
             {
                 if(!setbrush->lockedR_M)
                 {
-                    emit setbrush->setRadius(std::sqrt(std::abs(oPos.x()-startPos.x())*std::abs(oPos.x()-startPos.x())+std::abs(oPos.y()-startPos.y())*std::abs(oPos.y()-startPos.y())));
+                    emit setbrush->setRadius(std::sqrt(std::abs(oPos.x()-startPos.x())*std::abs(oPos.x()-startPos.x())
+                                                       +std::abs(oPos.y()-startPos.y())*std::abs(oPos.y()-startPos.y())));
                 }
             }
         }
@@ -199,7 +212,32 @@ void WorkSpace::mousePressEvent(QMouseEvent *qme)
         
     }break;
     case Seal:{
-        
+        if(qme->button()==Qt::RightButton)
+        {
+            switch(layerType) {
+            case LT_PICTURE:{
+                oPos=QPoint((qme->pos().x()-lymanager->x)/lymanager->k-lymanager->v_layers[layerIndex]->x,
+                            (qme->pos().y()-lymanager->y)/lymanager->k-lymanager->v_layers[layerIndex]->y);
+                texture=&((PictureLayer*)(lymanager->v_layers[layerIndex]))->object;
+            }break;
+            case LT_BACKGROUND:{
+                oPos=QPoint((qme->pos().x()-lymanager->x)/lymanager->k-lymanager->v_layers[layerIndex]->x,
+                            (qme->pos().y()-lymanager->y)/lymanager->k-lymanager->v_layers[layerIndex]->y);
+                texture=&((BackgroundLayer*)(lymanager->v_layers[layerIndex]))->object;
+            }break;
+            default:break;
+            }
+        }
+        else
+        {
+            if(layerType!=LT_PICTURE)return;
+            startPos=QPoint((qme->pos().x()-lymanager->x)/lymanager->k-lymanager->v_layers[layerIndex]->x,
+                            (qme->pos().y()-lymanager->y)/lymanager->k-lymanager->v_layers[layerIndex]->y);
+            painter.setSealTool(&((PictureLayer*)(lymanager->v_layers[layerIndex]))->object,startPos,
+                                texture,oPos);
+            pen1.setWidth(setbrush->width_M);
+            painter.setPen(pen1);
+        }
     }break;
     }
     lymanager->upDateUI();
@@ -242,7 +280,7 @@ void WorkSpace::mouseMoveEvent(QMouseEvent *qme)
         if(layerType!=LT_PICTURE)return;
         QPoint p=QPoint((qme->pos().x()-lymanager->x)/lymanager->k-lymanager->v_layers[layerIndex]->x,
                         (qme->pos().y()-lymanager->y)/lymanager->k-lymanager->v_layers[layerIndex]->y);
-        painter.drawPixmap(0,0,pix);
+        painter.drawImage(QRect(QPoint(0,0),img.size()),img);
         painter.drawLine(startPos,p);
     }break;
     case DrawCircle:{
@@ -251,14 +289,15 @@ void WorkSpace::mouseMoveEvent(QMouseEvent *qme)
                         (qme->pos().y()-lymanager->y)/lymanager->k-lymanager->v_layers[layerIndex]->y);
         if(setbrush->isCircle_M)
         {
-            painter.drawPixmap(0,0,pix);
-            int r=(int)std::sqrt(std::abs(p.x()-startPos.x())*std::abs(p.x()-startPos.x())+std::abs(p.y()-startPos.y())*std::abs(p.y()-startPos.y()));            
+            painter.drawImage(QRect(QPoint(0,0),img.size()),img);
+            int r=(int)std::sqrt(std::abs(p.x()-startPos.x())*std::abs(p.x()-startPos.x())
+                                 +std::abs(p.y()-startPos.y())*std::abs(p.y()-startPos.y()));            
             painter.drawEllipse(startPos,r,r);
             emit setbrush->setRadius(r);
         }
         else
         {
-            drawMyArc(&painter,oPos,setbrush->radius_M,startPos,p);
+            painter.drawMyArc(oPos,setbrush->radius_M,startPos,p);
             startPos=p;
         }
         
@@ -274,8 +313,11 @@ void WorkSpace::mouseMoveEvent(QMouseEvent *qme)
         
     }break;
     case Seal:{
-
-        
+        if(layerType!=LT_PICTURE)return;
+        QPoint p=QPoint((qme->pos().x()-lymanager->x)/lymanager->k-lymanager->v_layers[layerIndex]->x,
+                        (qme->pos().y()-lymanager->y)/lymanager->k-lymanager->v_layers[layerIndex]->y);
+        painter.drawMyLine(startPos,p);
+        startPos=p;
     }break;
     }
     this->update();
@@ -287,37 +329,23 @@ void WorkSpace::mouseReleaseEvent(QMouseEvent *qme)
     {
         return;
     }
+    
+    if(painter.paintEngine())
+    {
+        painter.end();
+    }
+    
     switch (ttype) {
     case MoveAll:{
         setCursor(Qt::OpenHandCursor);
     }break;
-    case MoveLayer:{
-    }break;
-    case Brush:{
-        if(painter.paintEngine())
-        {
-            painter.end();
-        }
-    }break;
+    case MoveLayer:{}break;
+    case Brush:{}break;
     case DrawLine:{
-        if(painter.paintEngine())
-        {
-            painter.end();
-        }
         setCursor(Qt::ArrowCursor);
     }break;
-    case DrawCircle:{
-        if(painter.paintEngine())
-        {
-            painter.end();
-        }
-    }break;
-    case Eraser:{
-        if(painter.paintEngine())
-        {
-            painter.end();
-        }
-    }break;
+    case DrawCircle:{}break;
+    case Eraser:{}break;
     case TextEditor:{
         if(lymanager->v_layers[layerIndex]->type!=LT_TEXT)
         {

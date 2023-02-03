@@ -20,15 +20,13 @@ MainWindow::MainWindow(QWidget *parent) :
     lymanager=new LayerManager(this);
     lyatmanager=new LayerAttrManager(this,lymanager);
     setbrush=new SetBrushWidget(this);
-    setseal=new SetSealWidget(this);
     
     //准备工作区
     wkspace=new WorkSpace(this,
                           lymanager,
                           lyatmanager,
                           clmanager,
-                          setbrush,
-                          setseal);
+                          setbrush);
     
     //工具锁定
     connect(wkspace,&WorkSpace::lockTools,this,[=](bool isUnlock){
@@ -36,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
         listMenus+=ui->menuEdit->actions();
         listMenus+=ui->menuFile->actions();
         listMenus+=ui->menuView->actions();
+        listMenus+=ui->menuHide->actions();
         for(QList<QAction*>::iterator i=listMenus.begin();i!=listMenus.end();i++)
         {
             (*i)->setEnabled(isUnlock);
@@ -43,18 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
     
     //工具鼠标图标切换
-    connect(setbrush,&SetBrushWidget::widthChanged,this,[=](){
-        if(wkspace->ttype==Brush||wkspace->ttype==Eraser)
-        {
-            wkspace->setCursor(QCursor(QPixmap(":/CursorIcon/Brush.png").scaled(setbrush->width_M*lymanager->k*2,setbrush->width_M*lymanager->k*2)));
-        }
-    });
-    connect(setseal,&SetSealWidget::widthChanged,this,[=](){
-        if(wkspace->ttype==Seal)
-        {
-            wkspace->setCursor(QCursor(QPixmap(":/CursorIcon/Brush.png").scaled(setseal->width_M*lymanager->k*2,setseal->width_M*lymanager->k*2)));
-        }
-    });
+    connect(setbrush,&SetBrushWidget::widthChanged,this,&MainWindow::upDateCursorIcon);
     
     connect(lymanager,&LayerManager::wkspaceUpdate,this,[=](){
         wkspace->update();
@@ -79,11 +67,6 @@ MainWindow::MainWindow(QWidget *parent) :
     dwSetBrush->setAllowedAreas(Qt::AllDockWidgetAreas);
     dwSetBrush->setWidget(setbrush);
     
-    this->dwSetSeal=new QDockWidget("印章设置",this);
-    this->addDockWidget(Qt::RightDockWidgetArea,dwSetSeal);
-    dwSetBrush->setAllowedAreas(Qt::AllDockWidgetAreas);
-    dwSetSeal->setWidget(setseal);
-    
     //第三行
     this->dwLayer=new QDockWidget("图层",this);
     this->addDockWidget(Qt::RightDockWidgetArea,dwLayer);
@@ -100,8 +83,6 @@ MainWindow::MainWindow(QWidget *parent) :
     
     dwSetBrush->setFloating(1);
     dwSetBrush->hide();
-    dwSetSeal->setFloating(1);
-    dwSetSeal->hide();
     
     tabifyDockWidget(dwLayer,dwChannels);
     tabifyDockWidget(dwLayer,dwPath);//合并
@@ -120,6 +101,37 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::upDateCursorIcon()
+{
+    switch(wkspace->ttype)
+    {
+    case Brush:
+    case Eraser:
+    case Seal:
+    {
+        if(((setbrush->width_M*lymanager->k)<=1000)&&((setbrush->width_M*lymanager->k)>=8))
+        {
+            QPixmap pix(setbrush->width_M*lymanager->k,setbrush->width_M*lymanager->k);
+            pix.fill(Qt::transparent);
+            QPoint o(setbrush->width_M*lymanager->k/2,setbrush->width_M*lymanager->k/2);
+            QPainter qpt;
+            qpt.begin(&pix);
+            qpt.setPen(Qt::black);
+            qpt.drawEllipse(o,pix.width()/2,pix.height()/2);
+            qpt.setPen(Qt::white);
+            qpt.drawEllipse(o,pix.width()/2-1,pix.height()/2-1);
+            qpt.end();
+            wkspace->setCursor(QCursor(pix));
+        }
+        else
+        {
+            wkspace->setCursor(Qt::ArrowCursor);
+        }
+    }break;
+    default:break;
+    }
+}
+
 //——————————————————————————菜单栏处理————————————————————
 
 //--------------------------------------------文件--------------------------------------------
@@ -134,13 +146,13 @@ void MainWindow::on_actionNew_triggered()
     dlg.setLayout(&hbl);
     dlg.exec();
     
-    if(anw.pix!=nullptr)
+    if(anw.img!=nullptr)
     {
         if(this->lymanager->v_layers.empty())
         {
-            lymanager->k=wkspace->width()/(double)anw.pix->width();
+            lymanager->k=wkspace->width()/(double)anw.img->width();
             BackgroundLayer* bgl=new BackgroundLayer;
-            bgl->object=*anw.pix;
+            bgl->object=*anw.img;
             lymanager->v_layers.push_back(bgl);
             
             lymanager->width=bgl->width=bgl->object.width();
@@ -153,9 +165,9 @@ void MainWindow::on_actionNew_triggered()
             MainWindow* mainwindow=new MainWindow;
             mainwindow->show();
             
-            mainwindow->lymanager->k=mainwindow->wkspace->width()/(double)anw.pix->width();
+            mainwindow->lymanager->k=mainwindow->wkspace->width()/(double)anw.img->width();
             BackgroundLayer* bgl=new BackgroundLayer;
-            bgl->object=*anw.pix;
+            bgl->object=*anw.img;
             mainwindow->lymanager->v_layers.push_back(bgl);
             
             mainwindow->lymanager->width=bgl->width=bgl->object.width();
@@ -174,18 +186,50 @@ void MainWindow::on_actionExport_triggered()
     {
         return;
     }
-    QPixmap pix(lymanager->width,lymanager->height);
-    pix.fill(Qt::transparent);
+    QImage img(lymanager->width,lymanager->height,QImage::Format_ARGB32);
+    img.fill(Qt::transparent);
     for(int i=0;i<(int)lymanager->v_layers.size();i++)
     {
         if(lymanager->v_layers[i]->vis)
         {
-            lymanager->v_layers[i]->Draw(&pix);
+            lymanager->v_layers[i]->Draw(&img);
         }
         
     }
-    QImage img=pix.toImage();
     img.save(filename);
+}
+
+//打印
+void MainWindow::on_actionPrint_triggered()
+{
+    QPrinter printer;
+    QPrintPreviewDialog ppd(&printer,this);
+    ppd.setStyleSheet("color:rgb(0,0,0);");
+    connect(&ppd,&QPrintPreviewDialog::paintRequested,this,[=](QPrinter* prt){
+        if(lymanager==nullptr||lymanager->v_layers.empty())
+        {
+            return;
+        }
+        QPixmap pix(lymanager->width,lymanager->height);
+        pix.fill(Qt::transparent);
+        for(int i=0;i<(int)lymanager->v_layers.size();i++)
+        {
+            if(lymanager->v_layers[i]->vis)
+            {
+                lymanager->v_layers[i]->Draw(&pix);
+            }
+            
+        }
+        QPainter p;
+        p.begin(prt);
+        double k=p.viewport().width()/(double)pix.width();
+        k=pix.height()*k<p.viewport().height()?k:(p.viewport().height()/(double)pix.height());
+        p.drawPixmap(QRect((p.viewport().width()-pix.width()*k)/2,
+                           (p.viewport().height()-pix.height()*k)/2,
+                           pix.width()*k,pix.height()*k),pix);
+        p.end();
+    });
+    ppd.exec();
 }
 
 //退出
@@ -196,21 +240,65 @@ void MainWindow::on_actionExit_triggered()
 
 //--------------------------------------------编辑--------------------------------------------
 
+//水平翻折
 void MainWindow::on_actionHorizontalFold_triggered()
 {
     if(lymanager->selectedItems().size()==0)return;
     int pos=lymanager->v_layers.size()-lymanager->row(lymanager->selectedItems().at(0))-1;
     if(lymanager->v_layers[pos]->type!=2)return;
-    ((PictureLayer*)lymanager->v_layers[pos])->object=QPixmap::fromImage(((PictureLayer*)lymanager->v_layers[pos])->object.toImage().mirrored(1,0));
+    ((PictureLayer*)lymanager->v_layers[pos])->object.mirror(1,0);
     lymanager->upDateUI();
 }
 
+//垂直翻折
 void MainWindow::on_actionVerticalFold_triggered()
 {
     if(lymanager->selectedItems().size()==0)return;
     int pos=lymanager->v_layers.size()-lymanager->row(lymanager->selectedItems().at(0))-1;
     if(lymanager->v_layers[pos]->type!=2)return;
-    ((PictureLayer*)lymanager->v_layers[pos])->object=QPixmap::fromImage(((PictureLayer*)lymanager->v_layers[pos])->object.toImage().mirrored(0,1));
+    ((PictureLayer*)lymanager->v_layers[pos])->object.mirror(0,1);
+    lymanager->upDateUI();
+}
+
+//顺时针90°
+void MainWindow::on_actionClockwiseRotation90Dgr_triggered()
+{
+    if(lymanager->selectedItems().size()==0)return;
+    int pos=lymanager->v_layers.size()-lymanager->row(lymanager->selectedItems().at(0))-1;
+    if(lymanager->v_layers[pos]->type!=2)return;
+    QTransform mat;
+    mat.rotate(90);
+    ((PictureLayer*)lymanager->v_layers[pos])->object=((PictureLayer*)lymanager->v_layers[pos])->object.transformed(mat);
+    lymanager->v_layers[pos]->width=((PictureLayer*)lymanager->v_layers[pos])->object.width();
+    lymanager->v_layers[pos]->height=((PictureLayer*)lymanager->v_layers[pos])->object.height();
+    lymanager->upDateUI();
+}
+
+//逆时针90°
+void MainWindow::on_actionCounterClockwiseRotation90Dgr_triggered()
+{
+    if(lymanager->selectedItems().size()==0)return;
+    int pos=lymanager->v_layers.size()-lymanager->row(lymanager->selectedItems().at(0))-1;
+    if(lymanager->v_layers[pos]->type!=2)return;
+    QTransform mat;
+    mat.rotate(270);
+    ((PictureLayer*)lymanager->v_layers[pos])->object=((PictureLayer*)lymanager->v_layers[pos])->object.transformed(mat);
+    lymanager->v_layers[pos]->width=((PictureLayer*)lymanager->v_layers[pos])->object.width();
+    lymanager->v_layers[pos]->height=((PictureLayer*)lymanager->v_layers[pos])->object.height();
+    lymanager->upDateUI();
+}
+
+//180°
+void MainWindow::on_actionClockwiseRotation180Dgr_triggered()
+{
+    if(lymanager->selectedItems().size()==0)return;
+    int pos=lymanager->v_layers.size()-lymanager->row(lymanager->selectedItems().at(0))-1;
+    if(lymanager->v_layers[pos]->type!=2)return;
+    QTransform mat;
+    mat.rotate(180);
+    ((PictureLayer*)lymanager->v_layers[pos])->object=((PictureLayer*)lymanager->v_layers[pos])->object.transformed(mat);
+    lymanager->v_layers[pos]->width=((PictureLayer*)lymanager->v_layers[pos])->object.width();
+    lymanager->v_layers[pos]->height=((PictureLayer*)lymanager->v_layers[pos])->object.height();
     lymanager->upDateUI();
 }
 
@@ -222,14 +310,7 @@ void MainWindow::on_actionShrink_triggered()
     {
         lymanager->k*=0.9;
         wkspace->update();
-        if(wkspace->ttype==Brush||wkspace->ttype==Eraser)
-        {
-            wkspace->setCursor(QCursor(QPixmap(":/CursorIcon/Brush.png").scaled(setbrush->width_M*lymanager->k*2,setbrush->width_M*lymanager->k*2)));
-        }
-        else if(wkspace->ttype==Seal)
-        {
-            wkspace->setCursor(QCursor(QPixmap(":/CursorIcon/Brush.png").scaled(setseal->width_M*lymanager->k*2,setseal->width_M*lymanager->k*2)));
-        }
+        upDateCursorIcon();
     }
 }
 
@@ -240,14 +321,7 @@ void MainWindow::on_actionExpand_triggered()
     {
         lymanager->k*=1.1;
         wkspace->update();
-        if(wkspace->ttype==Brush||wkspace->ttype==Eraser)
-        {
-            wkspace->setCursor(QCursor(QPixmap(":/CursorIcon/Brush.png").scaled(setbrush->width_M*lymanager->k*2,setbrush->width_M*lymanager->k*2)));
-        }
-        else if(wkspace->ttype==Seal)
-        {
-            wkspace->setCursor(QCursor(QPixmap(":/CursorIcon/Brush.png").scaled(setseal->width_M*lymanager->k*2,setseal->width_M*lymanager->k*2)));
-        }
+        upDateCursorIcon();
     }
 }
 
@@ -256,6 +330,7 @@ void MainWindow::on_actionFitOnScreen_triggered()
 {
     lymanager->k=wkspace->width()/(double)lymanager->v_layers[0]->width;
     wkspace->update();
+    upDateCursorIcon();
 }
 
 //100%
@@ -263,6 +338,7 @@ void MainWindow::on_action100Per_triggered()
 {
     lymanager->k=1;
     wkspace->update();
+    upDateCursorIcon();
 }
 
 //回原点
@@ -272,7 +348,6 @@ void MainWindow::on_actionMoveTo0_triggered()
     lymanager->y=0;
     wkspace->update();
 }
-
 
 //--------------------------------------------工具--------------------------------------------
 
@@ -285,7 +360,6 @@ void MainWindow::on_actionToolMoveAll_toggled(bool checked)
     }
 }
 
-
 void MainWindow::on_actionToolMoveLayer_toggled(bool checked)
 {
     if(checked)
@@ -295,13 +369,12 @@ void MainWindow::on_actionToolMoveLayer_toggled(bool checked)
     }
 }
 
-
 void MainWindow::on_actionToolBrush_toggled(bool checked)
 {
     if(checked)
     {
-        wkspace->setCursor(QCursor(QPixmap(":/CursorIcon/Brush.png").scaled(setbrush->width_M*lymanager->k*2,setbrush->width_M*lymanager->k*2)));
         wkspace->ttype=Brush;
+        upDateCursorIcon();
     }
 }
 
@@ -323,16 +396,14 @@ void MainWindow::on_actionDrawCircle_toggled(bool checked)
     }
 }
 
-
 void MainWindow::on_actionToolEraser_toggled(bool checked)
 {
     if(checked)
     {
-        wkspace->setCursor(QCursor(QPixmap(":/CursorIcon/Brush.png").scaled(setbrush->width_M*lymanager->k*2,setbrush->width_M*lymanager->k*2)));
         wkspace->ttype=Eraser;
+        upDateCursorIcon();
     }
 }
-
 
 void MainWindow::on_actionToolTextEditor_toggled(bool checked)
 {
@@ -343,15 +414,52 @@ void MainWindow::on_actionToolTextEditor_toggled(bool checked)
     }
 }
 
-
-
 void MainWindow::on_actionToolSeal_toggled(bool checked)
 {
     if(checked)
     {
-        wkspace->setCursor(QCursor(QPixmap(":/CursorIcon/Brush.png").scaled(setbrush->width_M*lymanager->k*2,setbrush->width_M*lymanager->k*2)));
         wkspace->ttype=Seal;
+        upDateCursorIcon();
     }
 }
 
+//--------------------------------------------隐藏菜单--------------------------------------------
+void MainWindow::on_actionToolShrink_triggered()
+{
+    switch(wkspace->ttype)
+    {
+    case Brush:
+    case Eraser:
+    case DrawLine:
+    case DrawCircle:
+    case Seal:
+    {
+        if(setbrush->width_M-1>=1)
+        {
+            emit setbrush->setWidth(setbrush->width_M-1);
+        }
+    }break;
+    default:break;
+    }
+    upDateCursorIcon();
+}
 
+void MainWindow::on_actionToolExpand_triggered()
+{
+    switch(wkspace->ttype)
+    {
+    case Brush:
+    case Eraser:
+    case DrawLine:
+    case DrawCircle:
+    case Seal:
+    {
+        if(setbrush->width_M+1<=100)
+        {
+            emit setbrush->setWidth(setbrush->width_M+1);
+        }
+    }break;
+    default:break;
+    }
+    upDateCursorIcon();
+}

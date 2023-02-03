@@ -27,8 +27,8 @@ ActionNewWidget::~ActionNewWidget()
 
 void ActionNewWidget::on_pushButtonSure_clicked()
 {
-    pix=new QPixmap(ui->spinBoxW->value(),ui->spinBoxH->value());
-    pix->fill(color);
+    img=new QImage(ui->spinBoxW->value(),ui->spinBoxH->value(),QImage::Format_ARGB32);
+    img->fill(color);
     if(p_dlg!=nullptr)
     {
         p_dlg->close();

@@ -5,15 +5,16 @@
 #include<QPaintDevice>
 #include<QPainter>
 #include<QPixmap>
+#include<QImage>
 
 class BackgroundLayer:public Layer
 {
 public:
     BackgroundLayer();
     ~BackgroundLayer();
-    void Draw(QPixmap* qpd);
+    void Draw(QPaintDevice* qpd);
     
-    QPixmap object;
+    QImage object;
 };
 
 #endif // BACKGROUNDLAYER_H

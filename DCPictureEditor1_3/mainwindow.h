@@ -7,20 +7,20 @@
 #include"workspace.h"
 #include<QStatusBar>
 #include"Color/colormanager.h"
-#include"Layer/backgroundlayer.h"
 #include"SetToolsWidgets/SetBrushWidget/setbrushwidget.h"
 #include<QFileDialog>
 #include<QImage>
-#include"Color/svwidget.h"
 #include<QDebug>
 #include"ActionsWidgets/ActionNewWidget/actionnewwidget.h"
 #include<QHBoxLayout>
 #include"SetToolsWidgets/SetTextEditorWidget/fontsetting.h"
 #include"SetToolsWidgets/SetTextEditorWidget/textlayereditor.h"
-#include"SetToolsWidgets/SetSealWidget/setsealwidget.h"
 #include"Layer/layerattrmanager.h"
 #include<QTime>
 #include<QActionGroup>
+#include<QPrinter>
+#include<QPrintPreviewDialog>
+#include<QTransform>
 
 namespace Ui {
 class MainWindow;
@@ -55,8 +55,9 @@ private:
     
     SetBrushWidget* setbrush;
     QDockWidget* dwSetBrush;
-    SetSealWidget* setseal;
-    QDockWidget* dwSetSeal;
+
+public slots:
+    void upDateCursorIcon();
     
 private slots:
     void on_actionExit_triggered();
@@ -94,6 +95,18 @@ private slots:
     void on_actionToolDrawLine_toggled(bool checked);
     
     void on_actionDrawCircle_toggled(bool checked);
+    
+    void on_actionPrint_triggered();
+    
+    void on_actionClockwiseRotation90Dgr_triggered();
+    
+    void on_actionCounterClockwiseRotation90Dgr_triggered();
+    
+    void on_actionClockwiseRotation180Dgr_triggered();
+    
+    void on_actionToolShrink_triggered();
+    
+    void on_actionToolExpand_triggered();
     
 private:
     Ui::MainWindow *ui;

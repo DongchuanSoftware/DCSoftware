@@ -10,10 +10,10 @@ PictureLayer::~PictureLayer()
     
 }
 
-void PictureLayer::Draw(QPixmap *qpd)
+void PictureLayer::Draw(QPaintDevice *qpd)
 {
     QPainter painter;
     painter.begin(qpd);
-    painter.drawPixmap(x,y,width,height,object);
+    painter.drawImage(QRect(x,y,width,height),object);
     painter.end();
 }
